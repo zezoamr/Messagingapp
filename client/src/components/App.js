@@ -1,17 +1,12 @@
+import useLocalStorage from "../hooks/LocalStorage";
+import Dashboard from "./Dashboard";
 import Login from "./Login";
-
-import {useState} from "react";
 
 function App() {
 
-  const [id, setID] = useState();
+  const [id, setID] = useLocalStorage('id');
   return (
-    <>
-      {id}
-      <Login onIdSubmit={setID} />
-      
-    </>
-    
+    id ? <Dashboard id={id}/> : <Login onIdSubmit={setID} />
   );
 }
 
