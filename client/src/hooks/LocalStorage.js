@@ -7,18 +7,24 @@ export default function useLocalStorage(key, initalValue) {
 
     const [value, setValue] = useState(() => {
         const jsonVal = localStorage.getItem(prefixedKey)
-        if (jsonVal !== null && jsonVal !== undefined) return JSON.parse(jsonVal)
-        if (typeof initalValue == 'function'){
+        if (jsonVal != null) {
+            if (jsonVal === "undefined") {
+                return null;
+            } else {
+                return JSON.parse(jsonVal);
+            }
+        }
+        if (typeof initalValue == 'function') {
             return initalValue()
         }
-        else{
+        else {
             return initalValue
         }
     })
 
-    useEffect(()=>{
+    useEffect(() => {
         localStorage.setItem(prefixedKey, JSON.stringify(value))
-    } ,[prefixedKey, value])
+    }, [prefixedKey, value])
 
     return [value, setValue]
 }
