@@ -34,7 +34,22 @@ export function ConversationsProvider({ id, children }) {
         setConversations(prevConversations => {
             return [...prevConversations, { recipients, messages: [] }]
         })
+        socket.emit('create-conversation', { recipients, messages: [] })
     }
+
+    const createConversationFromSomeoneElse = useCallback(({ recipients, messages }) => {
+        setConversations(prevConversations => {
+            return [...prevConversations, { recipients, messages: [] }]
+        })
+    }, [setConversations])
+    
+    useEffect(() => {
+        if (socket == null) return
+    
+        socket.on('receive-conversation', createConversationFromSomeoneElse)
+    
+        return () => socket.off('receive-conversation')
+    }, [socket, createConversationFromSomeoneElse])
 
     const addMessageToConversation = useCallback(({ recipients, text, sender }) => {
         

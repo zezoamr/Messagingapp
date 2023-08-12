@@ -18,4 +18,15 @@ io.on('connection', socket => {
             { recipients: newRecipients, sender: id, text })
         });
     }) //sends message to other user's room who have a recipient lists of everyone else in the chat except them
+
+    socket.on('create-conversation', ({ recipients, messages }) => {
+        recipients.forEach(recipient => {
+            const newRecipients = recipients.filter(r => r !== recipient)
+            newRecipients.push(id)
+            socket.broadcast.to(recipient).emit('receive-message', 
+            { recipients: newRecipients, messages})
+        });
+    })
+    //sends a list of recipients to other user's room who have a recipient lists of everyone else in the chat except them
+    //with empty messages to create conversation when someone else does it
 })
