@@ -14,8 +14,20 @@ export function ContactsProvider({ children }) {
             return [...prevContacts, {id, name}]
         })
     }
+    function setContactName(id, name){
+        setContacts((prevContacts)=>{
+            return prevContacts.map((contact) => {
+                if(contact.id === id) {
+                    return { id, name }
+                } else {
+                    return contact
+                }
+            })
+        })
+    }
+
   return (
-    <ContactsContext.Provider value={{contacts, createContact}}>
+    <ContactsContext.Provider value={{contacts, createContact, setContactName}}>
         {children}
     </ContactsContext.Provider>
   )
