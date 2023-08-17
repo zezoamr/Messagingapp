@@ -28,6 +28,7 @@ export function ConversationsProvider({ id, children }) {
     const { contacts } = useContacts()
     const [selectedConversationIndex, setSelectedConversationIndex] = useState(0)
     const socket = useSocket()
+    const [currentlySelectingConversations, setCurrentlySelectingConversations] = useState(true);
 
 
     function createConversation(recipients) {
@@ -109,7 +110,7 @@ export function ConversationsProvider({ id, children }) {
             })
             const name = (contact && contact.name) || message.sender
             const fromMe = id === message.sender
-            console.log(fromMe," ", id," ",  message.sender)
+            //console.log(fromMe," ", id," ",  message.sender)
             return { ...message, senderName: name, fromMe }
         })
 
@@ -122,7 +123,9 @@ export function ConversationsProvider({ id, children }) {
         setSelectedConversationIndex,
         currentSelectedConversation: formattedConversations[selectedConversationIndex],
         createConversation,
-        sendMessage
+        sendMessage,
+        currentlySelectingConversations,
+        setCurrentlySelectingConversations
     }
 
     return (

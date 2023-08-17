@@ -1,10 +1,12 @@
 import React from 'react'
 import { useContacts } from '../contexts/ContactsProvider'
 import { ListGroup} from 'react-bootstrap'
+import { useConversations } from '../contexts/ConversationsProvider';
 
 export default function Contacts() {
 
-  const {contacts, setContactName} = useContacts()
+  const {contacts, setContactName, setCurrentlySelectedContact} = useContacts()
+  const { setCurrentlySelectingConversations } = useConversations()
 
   return (
     <ListGroup variant="flush">
@@ -12,12 +14,17 @@ export default function Contacts() {
         <ListGroup.Item 
           key={contact.id}
           action
-          onClick={() => {
+          onDoubleClick={() => {
             const newValue = window.prompt('Enter new contact name:')
             if (newValue) {
               setContactName(contact.id, newValue)
             }
           }}
+          onClick={()=>{
+              setCurrentlySelectedContact(contact.id)
+              setCurrentlySelectingConversations(false)
+              //console.log("currentlySelectedContact " + currentlySelectedContact)
+            }}
           >
           {contact.name}
         </ListGroup.Item>
