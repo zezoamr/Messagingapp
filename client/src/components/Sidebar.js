@@ -17,6 +17,7 @@ function Sidebar({id}) {
     function closeModal(){
         setmodalOpen(false)
     }
+    
   return (
     <div style={{width: '250px'}} className='d-flex flex-column'>
         <Tab.Container activeKey={activeKey} onSelect={setActiveKey}>
@@ -40,6 +41,14 @@ function Sidebar({id}) {
             Your Id: <span className='text-muted'> {id} </span>
             </div>
             <Button onClick={() => setmodalOpen(true)}> New {conversationsOpen? 'Conversation' : 'Contact'} </Button>
+            <Button onClick={() => downloadData()}> Export your data</Button>
+            <label className="btn btn-primary">
+                Import your data
+                <input type="file" onChange={(event) => {
+                    const file = event.target.files[0];
+                    importData(file);
+                }} style={{ display: 'none' }} />
+            </label>
         </Tab.Container>
         <Modal show={modalOpen} onHide={closeModal}>
             { conversationsOpen ?
@@ -52,3 +61,47 @@ function Sidebar({id}) {
 }
 
 export default Sidebar
+
+
+const PREFIX = 'Messaging-app'
+
+function downloadData() {
+    const data = exportLocalStorage([PREFIX + 'contacts', PREFIX + 'conversations', PREFIX + 'id'])
+    console.log("Data" + data)
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const filename = `${PREFIX}-${Date.now()}-backup.json`;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function exportLocalStorage(keys) {
+    const data = {};
+    keys.forEach(key => {
+        const jsonVal = localStorage.getItem(key);
+        if (jsonVal != null) {
+            if (jsonVal === "undefined") {
+                data[key] = null;
+            } else {
+                data[key] = JSON.parse(jsonVal);
+            }
+        }
+    });
+    return JSON.stringify(data);
+}
+
+function importData(file, callback) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const data = JSON.parse(event.target.result);
+        Object.keys(data).forEach(key => {
+            localStorage.setItem(key, JSON.stringify(data[key]));
+        });
+        if (callback) callback();
+    };
+    reader.readAsText(file);
+}
